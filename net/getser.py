@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 
 import socket
-import os
 from optparse import OptionParser
 
 def getser(addr,port):
     s = socket.socket()
     s.connect((addr,port))
     s.send("GET / HTTP/1.0\n\n")
-    receive = s.recv(200)
+    receive = s.recv(500)
     s.close()
     return receive
 
@@ -21,11 +20,18 @@ def getarg():
     global port
     address = options.address
     port = options.port
-    print "address:%s, port:%d" % (address, port)
+
+def server():
+    getarg()
+    mesg = getser(address,port).split('\r\n')
+    num = len(mesg)
+    for i in range(num):
+        if mesg[i][0:6] == "Server":
+            break
+    print mesg[i]
 
 def main():
-    getarg()
-    print getser(address,port)
+    server()
 
 if __name__ == '__main__':
     main()
