@@ -14,17 +14,46 @@ def getargs():
     username = options.username
     passwd = options.passwd
 
+title = "pyftp>"
+
 def login():
     getargs()
     try:
+        global pyftp
         pyftp = ftplib.FTP(host, username, passwd)
-        print "Login successful"
-        print "pyftp>",
-        stdin = raw_input()
-        pyftp.dir()
-        print "pyftp>",
+        print "Login Successful"
+        pyftp.getwelcome()
+        print title,
+        while True:
+            stdin = raw_input()
+            stdarg = stdin.split(" ")
+            if stdin == 'ls' or stdin == 'dir':
+                pyftp.dir()
+            elif stdin == 'pwd':
+                pyftp.pwd()
+            elif stdarg[0] == 'cd':
+                pyftp.cwd(stdarg[1])
+            elif stdarg[0] == 'mkdir':
+                pyftp.mkd(stdarg[1])
+            elif stdarg[0] == 'rmdir':
+                pyftp.rmd(stdarg[1])
+            elif stdarg[0] == 'mv' or stdarg[0] == 'rename':
+                pyftp.rename(stdarg[1],stdarg[2])
+            elif stdarg[0] == 'rm' or stdarg[0] == 'delete':
+                pyftp.delete(stdarg[1])
+            elif stdin == 'quit' or stdin == 'exit':
+                pyftp.quit()
+                break
+            elif stdin == 'help':
+                print "ls\tdir\tpwd\tmkdir\t\nrmdir\tmv\trename\tquit\t\nexit\tdelete\trm"
+            elif stdin == '':
+                pass
+            else:
+                print "Invalid command.Try again.\"help\" for more information."
+            print title,
     except ftplib.all_errors:
-        print "ftp error"
+        print ftplib.all_errors
+        print "Error\r\nLogout"
 
 def main():
     login()
