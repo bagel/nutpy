@@ -6,3 +6,8 @@ How to use?
 #python getser.py -a www.google.com -p 80
 You will get more help when type
 #python getser.py -h
+
+=====>2011-10-17<=====
+Pyftp,ftp client.
+Get help
+#python pyftp.py -h
