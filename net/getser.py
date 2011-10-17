@@ -5,10 +5,15 @@ from optparse import OptionParser
 
 def getser(addr,port):
     s = socket.socket()
-    s.connect((addr,port))
-    s.send("GET / HTTP/1.0\n\n")
-    receive = s.recv(500)
-    s.close()
+    s.settimeout(10)
+    try:
+        s.connect((addr,port))
+        s.send("GET / HTTP/1.0\n\n")
+        receive = s.recv(500)
+    except (KeyboardInterrupt, socket.error):
+        receive = "Server: Timeout"
+    finally:
+        s.close()
     return receive
 
 def getarg():
@@ -23,12 +28,17 @@ def getarg():
 
 def server():
     getarg()
-    mesg = getser(address,port).split('\r\n')
+    mesg = getser(address,port).splitlines()
     num = len(mesg)
+    j = -1
     for i in range(num):
         if mesg[i][0:6] == "Server":
+            j = i
             break
-    print mesg[i]
+    if j == -1:
+        print "Server: Unknown"
+    else:
+        print mesg[i]
 
 def main():
     server()
