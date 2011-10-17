@@ -41,11 +41,19 @@ def login():
                 pyftp.rename(stdarg[1],stdarg[2])
             elif stdarg[0] == 'rm' or stdarg[0] == 'delete':
                 pyftp.delete(stdarg[1])
+            elif stdarg[0] == 'get':
+                local_file = open(stdarg[1], 'wb')
+                pyftp.retrbinary('RETR %s' % stdarg[1], local_file.write)
+                print "Transfer complete."
+            elif stdarg[0] == 'put':
+                local_file = open(stdarg[1], 'rb')
+                pyftp.storbinary('STOR %s' % stdarg[1], local_file)
+                print "Transfer complete."
             elif stdin == 'quit' or stdin == 'exit':
                 pyftp.quit()
                 break
             elif stdin == 'help':
-                print "ls\tdir\tpwd\tmkdir\t\nrmdir\tmv\trename\tquit\t\nexit\tdelete\trm"
+                print "ls\tdir\tpwd\tmkdir\t\nrmdir\tmv\trename\tquit\t\nexit\tdelete\trm\tget"
             elif stdin == '':
                 pass
             else:
