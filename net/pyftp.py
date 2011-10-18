@@ -5,9 +5,9 @@ from optparse import OptionParser
 
 def getargs():
     parser = OptionParser()
-    parser.add_option("-r", "--remote-address", dest="address", default="localhost", help="Remote ftp server host IP or Domain", metavar="REMOTE ADDRESS")
-    parser.add_option("-u", "--username", dest="username", default="ftp", help="Ftp user name", metavar="USERNAME")
-    parser.add_option("-p", "--passwd", dest="passwd", default="", help="Ftp password", metavar="PASSWORD")
+    parser.add_option("-r", "--remote-address", dest="address", default="localhost", help="remote ftp server host IP or Domain", metavar="REMOTE ADDRESS")
+    parser.add_option("-u", "--username", dest="username", default="ftp", help="ftp user name", metavar="USERNAME")
+    parser.add_option("-p", "--passwd", dest="passwd", default="", help="ftp password", metavar="PASSWORD")
     (options, args) = parser.parse_args()
     global host, username, passwd
     host = options.address
@@ -55,7 +55,7 @@ def operate():
             print "Goodbye!"
             break
         elif stdin == 'help':
-            print "ls\tdir\tpwd\tmkdir\t\nrmdir\tmv\trename\tquit\t\nexit\tdelete\trm\tget"
+            print "ls\tdir\tpwd\tmkdir\t\nrmdir\tmv\trename\tquit\t\nexit\tdelete\trm\tget\nput\thelp"
         elif stdin == '':
             pass
         else:
@@ -64,13 +64,19 @@ def operate():
 def cycle():
     try:
         operate()
-    except ftplib.all_errors:
+    except ftplib.error_perm:
+        print "550 Permission denied."
+        cycle()
+    except ftplib.error_temp:
+        print "421 Timeout."
         cycle()
     except IndexError:
         cycle()
-    except KeyboardInterrupt, KeyError:
-        pass
-        print "Goodbye!"
+    except IOError:
+        print "local: No such file or directory."
+        cycle()
+    except KeyboardInterrupt:
+        print "\r\nGoodbye!"
 
 def main():
     connect()
