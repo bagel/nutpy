@@ -44,10 +44,12 @@ def operate():
             pyftp.delete(stdarg[1])
         elif stdarg[0] == 'get':
             local_file = open(stdarg[1], 'wb')
+            print "Downloading ......"
             pyftp.retrbinary('RETR %s' % stdarg[1], local_file.write)
             print "Transfer complete."
         elif stdarg[0] == 'put':
             local_file = open(stdarg[1], 'rb')
+            print "Uploading ......"
             pyftp.storbinary('STOR %s' % stdarg[1], local_file)
             print "Transfer complete."
         elif stdin == 'quit' or stdin == 'exit':
