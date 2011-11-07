@@ -71,7 +71,6 @@ def cycle():
         cycle()
     except ftplib.error_temp:
         print "421 Timeout."
-        cycle()
     except IndexError:
         cycle()
     except IOError:
