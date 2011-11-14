@@ -8,7 +8,7 @@ def getser(addr,port):
     s.settimeout(10)
     try:
         s.connect((addr,port))
-        s.send("GET / HTTP/1.0\n\n")
+        s.send("HEAD / HTTP/1.0\n\n")
         receive = s.recv(500)
     except (KeyboardInterrupt, socket.error):
         receive = "Server: Timeout"
