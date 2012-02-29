@@ -11,3 +11,8 @@ You will get more help when type
 Pyftp,ftp client.
 Get help
 #python pyftp.py -h
+
+=====>2012-02-29<=====
+Pyftp update.
+exception IOError add to solve socket.error.
+#python pyftp.py
