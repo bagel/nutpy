@@ -14,5 +14,5 @@ Get help
 
 =====>2012-02-29<=====
 Pyftp update.
-exception IOError add to solve socket.error.
+Exception IOError add to solve socket.error.
 #python pyftp.py
