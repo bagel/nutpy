@@ -84,4 +84,7 @@ def main():
     cycle()
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except IOError:
+        print "try \"-h\" or \"--help\" for more help."
