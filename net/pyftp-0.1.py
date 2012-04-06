@@ -11,23 +11,14 @@ if len(sys.argv) != 2 or sys.argv[1] == '-h' or sys.argv[1] == '--help':
 
 title = "pyftp>"
 
-def get_msg(n):
-    if n == 0:
-        return "Goodbye!"
-    elif n == 1:
-        return "Error: file name not given or give too more."
-    elif n == 2:
-        return "Command not found, try 'h' or 'help' for more help."
-    elif n == 3:
-        return "Error: address can't connect, please check and try again."
-    elif n == 4:
-        return "Error: please check and try again."
-    elif n == 5:
-        return "Local Error: no such file or directory"
-    elif n == 6:
-        return "Task not complete."
-    elif n == 7:
-        return "Login Error: please check your user or password and try again."
+msg = ["Goodbye!",
+       "Error: file name not given or give too more.",
+       "Command not found, try 'h' or 'help' for more help.",
+       "Error: address can't connect, please check and try again.",
+       "Error: please check and try again.",
+       "Local Error: no such file or directory",
+       "Task not complete.",
+       "Login Error: please check your user or password and try again."]
 
 def recive(ftp):
     global ret
@@ -61,7 +52,7 @@ def login():
     send_cmd("PASS %s" % password)
     recive(cftp)
     if recv_num(ret) == 530:
-        print "%s\n%s" % (get_msg(7), get_msg(0))
+        print "%s\n%s" % (msg[7], msg[0])
         sys.exit(0)
 
 def data_connect(r):
@@ -154,7 +145,7 @@ def cyc_run():
         input_cmd()
 
         if cmd == "q" or cmd == "quit" or cmd == "exit":
-            print get_msg(0)
+            print msg[0]
             sys.exit(0)
         elif cmd == '':
             continue
@@ -163,7 +154,7 @@ def cyc_run():
             continue
         elif cmd0 == 'mv':
             if cmd_len != 3:
-                print get_msg(1)
+                print msg[1]
                 continue
             send_cmd(mv_cmd1)
             send_cmd(mv_cmd2)
@@ -175,20 +166,20 @@ def cyc_run():
             continue
         elif cmd0 == 'get':
             if cmd_len != 2:
-                print get_msg(1)
+                print msg[1]
                 continue
             if get_file(filename):
                 recive(cftp)
             continue
         elif cmd0 == 'put':
             if cmd_len != 2:
-                print get_msg(1)
+                print msg[1]
                 continue
             put_file(filename)
         #    recive(cftp)
             continue
         elif cmd0 not in cmd_list:
-            print get_msg(2)
+            print msg[2]
             continue
 
         send_cmd(cmd)
@@ -200,14 +191,16 @@ def main():
             try:
                 cyc_run()
             except KeyboardInterrupt:
-                print "\n%s\n%s" % (get_msg(6),get_msg(0))
+                print "\n%s\n%s" % (msg[6],msg[0])
                 sys.exit(0)
             except IndexError:
-                print get_msg(4)
+                print msg[4]
             except IOError:
-                print "%s: '%s'" % (get_msg(5), filename)
+                print "%s: '%s'" % (msg[5], filename)
     except socket.gaierror:
-        print "%s\n%s" % (get_msg(3), usage)
+        print "%s\n%s" % (msg[3], usage)
+    except KeyboardInterrupt:
+        print "\n%s\n%s" % (msg[6], msg[0])
 
 if __name__ == "__main__":
     main()
