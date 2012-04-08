@@ -9,7 +9,7 @@ if len(sys.argv) != 2 or sys.argv[1] == '-h' or sys.argv[1] == '--help':
     print usage
     sys.exit(0)
 
-MODE = 0   #'1' use pasv mode, else use port mode.
+MODE = 1   #'1' use pasv mode, else use port mode.
 
 title = "pyftp>"
 
@@ -19,8 +19,7 @@ inf = ("Goodbye!",
        "Error: address can't connect, please check and try again.",
        "Error: please check and try again.",
        "Local Error: no such file or directory",
-       "Task not complete.",
-       "Login Error: please check your user or password and try again.")
+       "Task not complete.")
 
 def get_msg():
     global msg
@@ -47,23 +46,24 @@ def send_cmd(command):
     cftp.send(command + '\n')
     get_msg()
 
-def login():
+def ln_connect():
     global cftp
     cftp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     cftp.connect((sys.argv[1], 21))
     get_msg()
+
+def login():
     user = raw_input("user(ftp):")
     if user == '':
         user = 'ftp'
     send_cmd("USER %s" % user)
-    password = raw_input("password:")
     if msg[0] == '3':
+        password = raw_input("password:")
         send_cmd("PASS %s" % password)
 #    if recv_num(msg) != 230:
 #        get_msg()
     if msg[:3] == '530':
-        print "%s\n%s" % (inf[7], inf[0])
-        sys.exit(0)
+        login()
 
 def pasv_connect():
     imin = msg.find('(')
@@ -117,11 +117,13 @@ def make_port():
 
 def port_connect():
     global port_cmd, tftp
-    hostip = socket.gethostbyname(socket.gethostname()) #replace to your host ip here
+#    loip = socket.gethostbyname(socket.gethostname())
+    hostip = '10.217.86.123'     #replace to your host ip here
     ipn = hostip.split('.')
     port_cmd = "PORT %s,%s,%s,%s,%s,%s" % (ipn[0], ipn[1], ipn[2], ipn[3], port1, port2)
     tftp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    tftp.bind((hostip, port))
+    sock_ip, sock_port = tftp.getsockname()
+    tftp.bind((sock_ip, port))
     tftp.listen(1)
 
 def mod_port():
@@ -131,7 +133,10 @@ def mod_port():
     send_cmd(port_cmd)
     if msg[0] == '2':
         send_cmd(cmd)
-        tftp_sock, addr = tftp.accept()
+        while True:
+            tftp_sock, addr = tftp.accept()
+            if tftp_sock:
+                break
         return 1
     return 0
 
@@ -148,13 +153,14 @@ def chs_mod():
     return 0
 
 def get_file(filename):
-    chs_mod()
+    if not chs_mod():
+        return 0
     if msg[:3] == '550':
         return 0
     fd = open(filename, 'wb+')
     print "Downloading..."
     while True:
-        data = dftp.recv(1024)
+        data = sock.recv(1024)
         if data == '':
             break
         fd.write(data)
@@ -163,12 +169,13 @@ def get_file(filename):
 
 def put_file(filename):
     fp = open(filename, 'rb+')
-    chs_mod()
+    if not chs_mod():
+        return 0
     while True:
         data = fp.readline()
         if not data:
             break
-        dftp.send(data)
+        sock.send(data)
         print data
     fp.close()
 
@@ -229,6 +236,7 @@ def cyc_run():
 
 def main():
     try:
+        ln_connect()
         login()
         while True:
             try:
