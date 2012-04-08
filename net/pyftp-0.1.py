@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# pyftp
+# pyftp, ftp client
 
 import sys
 import socket
@@ -9,16 +9,17 @@ if len(sys.argv) != 2 or sys.argv[1] == '-h' or sys.argv[1] == '--help':
     print usage
     sys.exit(0)
 
-MODE = 1   #'1' use pasv mode, else use port mode.
+MODE = 0   #'1' use pasv mode, else use port mode.
+hostip = '10.217.86.123'     #replace to your host ip here
 
 title = "pyftp>"
 
 inf = ("Goodbye!",
        "Error: file name not given or give too more.",
        "Command not found, try 'h' or 'help' for more help.",
-       "Error: address can't connect, please check and try again.",
+       "Error: address can't connect.",
        "Error: please check and try again.",
-       "Local Error: no such file or directory",
+       "Local: no such file or directory",
        "Task not complete.")
 
 def get_msg():
@@ -83,7 +84,7 @@ def input_cmd():
     cmd_len = len(scmd)
     cmd0 = scmd[0]
 
-    if scmd[0] == 'get' or scmd[0] == 'put' and cmd_len == 2:
+    if (scmd[0] == 'get' or scmd[0] == 'put') and cmd_len == 2:
         filename = scmd[1]
 
     cmd_dict = {'ls':'list', 'cd':'cwd', 'mkdir':'mkd', 'rmdir':'rmd',
@@ -118,7 +119,6 @@ def make_port():
 def port_connect():
     global port_cmd, tftp
 #    loip = socket.gethostbyname(socket.gethostname())
-    hostip = '10.217.86.123'     #replace to your host ip here
     ipn = hostip.split('.')
     port_cmd = "PORT %s,%s,%s,%s,%s,%s" % (ipn[0], ipn[1], ipn[2], ipn[3], port1, port2)
     tftp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -168,15 +168,21 @@ def get_file(filename):
     return 1
 
 def put_file(filename):
-    fp = open(filename, 'rb+')
+    try:
+        fp = open(filename, 'rb+')
+    except IOError:
+        print "%s: '%s'" % (inf[5], filename)
+        return 0
     if not chs_mod():
         return 0
+    if msg[:3] == '550':
+        return 0
+    print "Uploading..."
     while True:
         data = fp.readline()
         if not data:
             break
         sock.send(data)
-        print data
     fp.close()
 
 cmd_list = ('!', 'ls', 'cd', 'pwd', 'rm', 'rmdir', 'mkdir', 'mv', 'get', 'put', 'help', 'quit')
