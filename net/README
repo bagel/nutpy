@@ -21,3 +21,6 @@ Exception IOError add to solve socket.error.
 Pyftp new update.
 Use socket replace ftplib
 #python pyftp-0.1.py ftp.kernel.org
+
+=====>2012-04-09<=====
+Pyftp pyftp-0.1.py update and work fine.
