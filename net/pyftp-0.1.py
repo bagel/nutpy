@@ -29,7 +29,7 @@ def get_msg():
     if msg[3:4] == '-':
         while True:
             next_msg = ref.readline()
-            msg = msg + '\n' + next_msg
+            msg = msg + next_msg
             if next_msg[:3] == rn and next_msg[3:4] != '-':
                 break
     print msg,
