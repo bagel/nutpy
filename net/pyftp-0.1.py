@@ -15,7 +15,7 @@ hostip = '10.217.86.123'     #replace to your host ip here
 title = "pyftp>"
 
 inf = ("File name not given or give too more.",
-       "Command not found, try 'h' or 'help' for more help.",
+       "Try 'h' or 'help' for more help.",
        "Error: address can't connect.",
        "Error: please check and try again.",
        "Local: no such file or directory.",
@@ -111,7 +111,7 @@ def mod_pasv():
 def make_port():
     import random
     global port, port1, port2
-    port = random.randint(1024,65535)
+    port = random.randint(32768,61000)
     port1 = port/256
     port2 = port%256
 
@@ -238,11 +238,13 @@ def cyc_run():
             import os
             os.system('%s' % cmd[1:])
             continue
-        elif cmd0 not in cmd_list:
-            print inf[1]
-            continue
+        #elif cmd0 not in cmd_list:
+        #    print inf[1]
+        #    continue
 
         send_cmd(cmd)
+        if msg[:3] == '500':
+            print inf[1]
 
 def main():
     try:
@@ -254,18 +256,18 @@ def main():
             except KeyboardInterrupt:
                 print
                 send_cmd("quit")
-                sys.exit(0)
+                break
             except IndexError, NameError:
                 print inf[3]
             except socket.error:
                 print inf[5]
-                sys.exit(0)
+                break
     except socket.gaierror:
         print "%s\n%s" % (inf[2], usage)
     except KeyboardInterrupt:
         print
-        send_cmd("quit")
-    except:
+    finally:
+        cftp.close()
         sys.exit(0)
 
 if __name__ == "__main__":
