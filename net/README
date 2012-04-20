@@ -23,4 +23,9 @@ Use socket replace ftplib
 #python pyftp-0.1.py ftp.kernel.org
 
 =====>2012-04-09<=====
-Pyftp pyftp-0.1.py update and work fine.
+Pyftp pyftp-0.1 update and work fine.
+
+=====>2012-04-20<=====
+Pyftp pyftp-0.2 update.
+Add options and get local ip address.
+#python pyftp-0.2.py ftp.kernel.org -m PORT
