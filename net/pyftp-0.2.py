@@ -12,15 +12,17 @@ usage = '''Usage: pyftp [-m mode] [-r host] ftp.example.org
 err_help = "Try '-h' or '--help' for more help."
 file_err = "File name not given or give too more."
 
+if len(sys.argv) == 1:
+    print err_help
+    sys.exit(0)
+
+host = sys.argv[1]
+mode = "PASV"   #replace to the default mode here, "PASV" or "PORT"
+
 def get_opt():
     import getopt
     global host, mode
-    host = " "
-    mode = "PASV"
-    if len(sys.argv) == 1:
-        print err_help
-        sys.exit(0)
-    if sys.argv[1][0] != '-':   #if first arg not opt, then i think it's host
+    if sys.argv[1][0] != '-': #if first arg is not opt, then i think it's host
         host = sys.argv[1]
         argvs = sys.argv[2:]
     else:
@@ -49,7 +51,7 @@ def get_opt():
         print err_help
         sys.exit(0)
 
-get_opt()
+get_opt()   #if don't want to use options, comment this
 
 def get_msg():
     global msg
@@ -158,7 +160,7 @@ def mod_pasv():
 def make_port():
     import random
     global port, port1, port2
-    port = random.randint(32768,61000)
+    port = random.randint(32768,61000) #Linux ip_local_port_range
     port1 = port/256
     port2 = port%256
 
@@ -253,7 +255,8 @@ def put_file(filename):
     sock.close()
     return 1
 
-cmd_list = ('!', 'ls', 'cd', 'pwd', 'rm', 'rmdir', 'mkdir', 'mv', 'get', 'put', 'help', 'quit')
+cmd_list = ('!', 'ls', 'cd', 'pwd', 'rm', 'rmdir', 'mkdir',
+            'mv', 'get', 'put', 'help', 'quit')
 def put_help():
     cmd_len = len(cmd_list)
     for i in range(cmd_len):
